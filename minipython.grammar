@@ -1,0 +1,148 @@
+/*
+* Test Comments
+*/
+
+Package minipython;
+
+Helpers
+	digit = ['0' .. '9'];
+	letter = ['a' .. 'z']|['A' .. 'Z']; 
+	cr = 13; 
+	lf = 10;
+	space = 32;
+	all = [0..127]; 
+	eol = lf | cr | cr lf ;
+	not_eol = [all - [cr + lf]]; 
+
+Tokens
+	tab = 9;
+	plus = '+';
+	minus = '-';
+	mult = '*';
+	pow = '**';
+	mineq = '-=';
+	diveq = '/=';
+	div = '/';
+	dot = '.';
+	eq = '=';
+	deq = '==';
+	exclam = '!';
+	dictt = 'dict';
+	def = 'def';
+	logic_plus = '&&';
+	l_par = '(';
+	r_par = ')';
+	l_br = '[';
+	r_br = ']';
+	comma=',';
+	qmark = '?';
+	gqmark = ';';
+	if = 'if';
+	elif = 'elif';
+	else = 'else';
+	while = 'while';
+	for = 'for';
+	from = 'from';
+	imp = 'import';
+	assert = 'assert';
+	as = 'as';
+	print = 'print';
+	return = 'return';
+	in = 'in';
+	less = '<';
+	great = '>';
+	dif = '!=';
+	true = 'true';
+	semi = ':';
+	false = 'false';
+	quote = '"';
+	blank = (' ' | lf | cr);
+	line_comment = '#' not_eol* eol; 
+	id = letter (letter | digit)*;
+	float = digit* '.' digit+;
+	integer = ([digit-'0'] digit* | '0');
+	string = '"'(letter|space)*'"'|'''(letter|space)*''';
+	
+Ignored Tokens
+	blank, line_comment;
+
+Productions
+	goal = commands*;
+	
+	commands = {func}function | {state}statement;
+	
+	iddot = id dot;
+	
+	module = iddot* id;
+	
+	function = def id l_par argument? r_par semi statement;
+	
+	eqvalue = eq value;
+	
+	commaid = comma id eqvalue?;
+	
+	commaexp = comma expression;
+	
+	commavalue = comma value;
+	
+	asid = as id;
+	
+	commamoduleasid = comma module asid?;
+	
+	commaidasid = comma id asid?;
+	
+	sign = {negative} minus | {possitive} plus;
+	
+	hp_expression = {power} power |
+					{multiplication} hp_expression mult power|
+					{division} hp_expression div power;
+	
+	power = {something} something | 
+			{power} power pow something;
+						  
+	number = {integer} sign? integer|{float} sign? float;	
+				
+	value = {funccall} id dot functioncall | {number} number | {string} string;
+	
+	arglist = expression commaexp*;
+	
+	morevalue = {morevalue} value commavalue* ;
+	
+	argument = id eqvalue? commaid*;	
+	
+	statement = {if} tab* if comparison semi statement|
+			  	{while} tab* while comparison semi statement|
+				{for} tab* for [left_id]:id in [right_id]:id semi statement|
+				{return} tab* return expression|
+				{print_simple} tab* print expression commaexp* |
+				{equals} tab* id eq expression|
+				{subeq} tab* id mineq expression|
+				{diveq} tab* id diveq expression|
+				{list} tab* id l_br [left_id]:expression r_br eq [right_id]:expression|
+				{assert_exp} assert expression commaexp?|
+				{assert_comp} assert comparison commaexp?|
+				{funccall} tab* functioncall|
+				{import} import;
+				
+	expression = {multiplication} hp_expression |
+				 {addition} expression plus hp_expression|
+				 {subtraction} expression minus hp_expression; 				 
+					
+	something = {id} id |
+			  	{val} value |
+				{func_call} functioncall |
+				{par_exp} l_par expression r_par |
+				{br_exp} l_br morevalue* r_br |
+				{id2} id l_br expression r_br;
+				
+	import = {importas} [left_imp]:imp [module1]:module [as_id1]:asid? commamoduleasid* |
+			 {fromimport} from [module2]:module [imp2]:imp id [as_id2]:asid? commaidasid*;
+	
+	comparison = {great} [left_exp]:expression great [right_exp]:expression |
+				 {less} [left_exp]:expression less [right_exp]:expression |
+				 {dif} [left_exp]:expression dif [right_exp]:expression |
+				 {eq} [left_exp]:expression deq [right_exp]:expression |
+				 {true} true |
+				 {false} false;
+	
+	functioncall = id l_par arglist? r_par;
