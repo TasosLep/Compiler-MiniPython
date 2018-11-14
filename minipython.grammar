@@ -66,17 +66,13 @@ Tokens
 Ignored Tokens
 	blank, line_comment;
 
-Productions
+Productions	
 	goal = commands*;
-	
+
 	commands = {func}function | {state}statement;
 	
 	iddot = id dot;
-	
-	module = iddot* id;
-	
-	function = def id l_par argument? r_par semi statement;
-	
+		
 	eqvalue = eq value;
 	
 	commaid = comma id eqvalue?;
@@ -99,14 +95,10 @@ Productions
 	
 	power = {something} something | 
 			{power} power pow something;
-						  
-	number = {integer} sign? integer|{float} sign? float;	
-				
-	value = {funccall} id dot functioncall | {number} number | {string} string;
-	
-	arglist = expression commaexp*;
-	
+			
 	morevalue = {morevalue} value commavalue* ;
+	
+	function = def id l_par argument? r_par semi statement;
 	
 	argument = id eqvalue? commaid*;	
 	
@@ -137,6 +129,8 @@ Productions
 				
 	import = {importas} [left_imp]:imp [module1]:module [as_id1]:asid? commamoduleasid* |
 			 {fromimport} from [module2]:module [imp2]:imp id [as_id2]:asid? commaidasid*;
+			 
+	module = iddot* id;
 	
 	comparison = {great} [left_exp]:expression great [right_exp]:expression |
 				 {less} [left_exp]:expression less [right_exp]:expression |
@@ -146,3 +140,9 @@ Productions
 				 {false} false;
 	
 	functioncall = id l_par arglist? r_par;
+	
+	arglist = expression commaexp*;
+			
+	value = {funccall} id dot functioncall | {number} number | {string} string;
+	
+	number = {integer} sign? integer|{float} sign? float;
