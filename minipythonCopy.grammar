@@ -1,0 +1,193 @@
+/*
+* Test Comments
+*/
+
+Package minipython;
+
+Helpers
+	digit = ['0' .. '9'];
+	letter = ['a' .. 'z']|['A' .. 'Z']; 
+	cr = 13; 
+	lf = 10;
+	space = 32;
+	all = [0..127]; 
+	eol = lf | cr | cr lf ;
+	not_eol = [all - [cr + lf]]; 
+
+Tokens
+	tab = 9;
+	plus = '+';
+	minus = '-';
+	mult = '*';
+	pow = '**';
+	mineq = '-=';
+	diveq = '/=';
+	div = '/';
+	dot = '.';
+	eq = '=';
+	deq = '==';
+	exclam = '!';
+	dictt = 'dict';
+	def = 'def';
+	logic_plus = '&&';
+	l_par = '(';
+	r_par = ')';
+	l_br = '[';
+	r_br = ']';
+	comma=',';
+	qmark = '?';
+	gqmark = ';';
+	if = 'if';
+	elif = 'elif';
+	else = 'else';
+	while = 'while';
+	for = 'for';
+	from = 'from';
+	imp = 'import';
+	assert = 'assert';
+	as = 'as';
+	print = 'print';
+	return = 'return';
+	in = 'in';
+	less = '<';
+	great = '>';
+	dif = '!=';
+	true = 'true';
+	semi = ':';
+	false = 'false';
+	quote = '"';
+	blank = (' ' | lf | cr);
+	line_comment = '#' not_eol* eol; 
+	id = letter (letter | digit)*;
+	float = digit* '.' digit+;
+	integer = ([digit-'0'] digit* | '0');
+	string = '"'(letter|space)*'"'|'''(letter|space)*''';
+	
+Ignored Tokens
+	blank, line_comment;
+
+Productions	
+	goal = commands*{-> New goal( [commands] ) };
+
+	commands = {func}function {-> New commands.func( function ) } |
+			   {state}statement {-> New commands.state( statement ) };
+	
+	iddot = id dot {-> New iddot( id )};
+		
+	eqvalue = eq value {-> New eqvalue( value )};
+	
+	commaid = comma id eqvalue? {-> New commaid( id,[eqvalue] )};
+	
+	commaexp = comma expression {-> New commaexp( expression )};
+	
+	commavalue = comma value {-> New commavalue( value )};
+	
+	asid = as id {-> New asid( id )};
+	
+	commamoduleasid = comma module asid? {-> New commamoduleasid( module,[asid] ) };
+	
+	commaidasid = comma id asid? {-> New commaidasid( id,[asid] )};
+	
+	sign = {negative} minus {-> New sign.negative( minus ) } | {possitive} plus {-> New sign.possitive( plus )};
+	
+	hp_expression = {power} power {-> New hp_expression.power( power )}|
+					{multiplication} hp_expression mult power {-> New hp_expression.multiplication( power )}|
+					{division} hp_expression div power {-> New hp_expression.division( power )};
+	
+	power = {something} something {-> New power.something( something )}| 
+			{power} power pow something {-> New power.power( power,something )};
+			
+	morevalue = {morevalue} value commavalue* {-> New morevalue.morevalue( value,[commavalue] )};
+	
+	function = def id l_par argument? r_par semi statement {-> New morevalue( id,[argument],statement )};
+	
+	argument = id eqvalue? commaid* {-> New morevalue( [commaid] )};	
+	
+	statement = {if} tab* if comparison semi statement {-> New statement.if( comparison,statement )}|
+			  	{while} tab* while comparison semi statement {-> New statement.while( comparison,statement )}|
+				{for} tab* for [left_id]:id in [right_id]:id semi statement {-> New statement.for( id,id,statement )}|
+				{return} tab* return expression {-> New statement.return( expression )}|
+				{print_simple} tab* print expression commaexp* {-> New statement.print_simple( expression,[commaexp] )}|
+				{equals} tab* id eq expression {-> New statement.equals( id,expression )}|
+				{subeq} tab* id mineq expression {-> New statement.subeq( id,expression )}|
+				{diveq} tab* id diveq expression {-> New statement.diveq( id,expression )}|
+				{list} tab* id l_br [left_id]:expression r_br eq [right_id]:expression {-> New statement.list( id,expression,expression)}|
+				{assert_exp} assert expression commaexp? {-> New statement.assert_exp( expression,[commaexp]) }|
+				{assert_comp} assert comparison commaexp? {-> New statement.assert_comp( comparison,[commaexp] )}|
+				{funccall} tab* functioncall {-> New statement.funccall( functioncall )}|
+				{import} import {-> New statement.import( )};
+				
+	expression = {multiplication} hp_expression  {-> New expression.multiplication( hp_expression ) }|
+				 {addition} expression plus hp_expression {-> New expression.addition( expression,hp_expression ) }|
+				 {subtraction} expression minus hp_expression {-> New expression.subtraction( expression,hp_expression ) }; 				 
+					
+	something = {id} id {-> New something.id( id )}|
+			  	{val} value {-> New something.val( value )}|
+				{func_call} functioncall {-> New something.func_call( functioncall )}|
+				{par_exp} l_par expression r_par {-> New something.par_exp( expression )}|
+				{br_exp} l_br morevalue* r_br {-> New something.br_exp( [morevalue] )}|
+				{id2} id l_br expression r_br {-> New something.id2( expression )};
+				
+	import = {importas} [left_imp]:imp [module1]:module [as_id1]:asid? commamoduleasid* {-> New import.importas( imp,module,[asid],[commamoduleasid] )}|
+			 {fromimport} from [module2]:module [imp2]:imp id [as_id2]:asid? commaidasid* {-> New import.fromimport( module,imp,id,[asid],[commaidasid] )};
+			 
+	module = iddot* id {-> New module( [iddot],id )};
+	
+	comparison = {great} [left_exp]:expression great [right_exp]:expression {-> New comparison.great( expression,expression ) }|
+				 {less} [left_exp]:expression less [right_exp]:expression {-> New comparison.less( expression,expression ) }|
+				 {dif} [left_exp]:expression dif [right_exp]:expression {-> New comparison.dif( expression,expression ) }|
+				 {eq} [left_exp]:expression deq [right_exp]:expression {-> New comparison.eq( expression,expression ) }|
+				 {true} true {-> New comparison.true(  ) }|
+				 {false} false {-> New comparison.false(  ) };
+	
+	functioncall = id l_par arglist? r_par {-> New functioncall( id,[arglist] )};
+	
+	arglist = expression commaexp* {-> New arglist( [commaexp] )};
+			
+	value = {funccall} id dot functioncall {-> New value.funccall( id,functioncall )} |
+			{number} number {-> New value.number( number )}|
+		    {string} string {-> New value.string( string )};
+	
+	number = {integer} sign? integer {-> New number.integer( [sign],integer )} |
+			 {float} sign? float {-> New number.float( [sign],float )};
+	
+Abstract Syntax Tree	
+	goal = commands*;
+
+	commands = {func}function | {state}statement;
+	
+	function = id argument* statement;
+	
+	commaexp = expression;
+	
+	statement = {if} comparison statement|
+			  	{while} comparison statement|
+				{for} [left_id]:id [right_id]:id statement|
+				{return} expression|
+				{print_simple} expression commaexp* |
+				{equals} id expression|
+				{subeq} id expression|
+				{diveq} id expression|
+				{list} id [left_id]:expression [right_id]:expression|
+				{assert_exp} expression commaexp*|
+				{assert_comp} comparison commaexp*|
+				{funccall} functioncall|
+				{import} import;
+				
+	expression = {multiplication} hp_expression |
+				 {addition} expression hp_expression|
+				 {subtraction} expression hp_expression; 
+				
+	import = {importas} [left_imp]:imp [module1]:module [as_id1]:asid* commamoduleasid* |
+			 {fromimport} [module2]:module [imp2]:imp id [as_id2]:asid* commaidasid*;
+	
+	comparison = {great} [left_exp]:expression [right_exp]:expression |
+				 {less} [left_exp]:expression [right_exp]:expression |
+				 {dif} [left_exp]:expression [right_exp]:expression |
+				 {eq} [left_exp]:expression [right_exp]:expression |
+				 {true} |
+				 {false} ;
+				 
+	functioncall = id arglist* ;
+	
+	arglist = expression commaexp*;
