@@ -61,7 +61,6 @@ public class Visitor1 extends DepthFirstAdapter
 					symtable.put(fName, node);
 					return;
 				}
-				System.out.println("test");
 				
 				//boolean same_value = false;
 				LinkedList list1 = arg1.getEqvalue();
@@ -81,7 +80,6 @@ public class Visitor1 extends DepthFirstAdapter
 				list2 = arg2.getCommaid();
 				if(list1.size() == list2.size())
 				{
-					System.out.println(list1.size());
 					if (list1.size() == 0)
 					{
 						// there are no other arguments after the first one
