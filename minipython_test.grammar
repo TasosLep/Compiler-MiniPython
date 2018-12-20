@@ -125,6 +125,7 @@ Productions
 			  	{val} value {-> New expression.value(value)}|
 				{func_call} functioncall {-> New expression.funccall(functioncall)}|
 				{par_exp} l_par expression r_par {-> New expression.par_exp(expression)}|
+				/*according to the BNF, we have at least one value here but we accept zero*/
 				{br_exp} l_br morevalue* r_br {-> New expression.val_comma_val([morevalue])}|
 				{id2} id l_br expression r_br {-> New expression.par_exp(expression)};
 				
