@@ -72,7 +72,7 @@ Productions
 	commands = {func}function{-> New commands.func(function) } |
 			   {state}statement{-> New commands.state(statement) };
 	
-	iddot = id dot {-> New iddot(id, dot)};
+	iddot = id dot {-> New iddot(id)};
 		
 	eqvalue = eq value {-> New eqvalue(value)};
 	
@@ -88,7 +88,7 @@ Productions
 	
 	commaidasid = comma id asid?{-> New commaidasid(id, [asid])};
 	
-	sign = {negative} minus{-> New sign.negative(minus)} | {possitive} plus{-> New  sign.possitive(plus)};
+	sign = {negative} minus{-> New sign.negative()} | {possitive} plus{-> New  sign.possitive()};
 	
 	hp_expression{-> expression} = {power} power {-> power.expression}|
 					{multiplication} hp_expression mult power {-> New expression.mult(hp_expression.expression, power.expression)}|
@@ -137,8 +137,8 @@ Productions
 				 {less} [left_exp]:expression less [right_exp]:expression {-> New comparison.less(left_exp, right_exp)}|
 				 {dif} [left_exp]:expression dif [right_exp]:expression {-> New comparison.dif(left_exp, right_exp)}|
 				 {eq} [left_exp]:expression deq [right_exp]:expression {-> New comparison.eq(left_exp, right_exp)}|
-				 {true} true {-> New comparison.true(true)}|
-				 {false} false{-> New comparison.false(false)};
+				 {true} true {-> New comparison.true()}|
+				 {false} false{-> New comparison.false()};
 	
 	functioncall = id l_par arglist? r_par{-> New functioncall(id, [arglist])};
 	
@@ -200,8 +200,8 @@ Abstract Syntax Tree
 				 {less} [left_exp]:expression [right_exp]:expression |
 				 {dif} [left_exp]:expression [right_exp]:expression |
 				 {eq} [left_exp]:expression [right_exp]:expression |
-				 {true}  true|
-				 {false} false;
+				 {true}  |
+				 {false} ;
 
 	functioncall = id arglist*;
 	
@@ -212,7 +212,7 @@ Abstract Syntax Tree
 	number = {integer} integer|{float} float;
 	
 
-	iddot = id dot;
+	iddot = id;
 
 	commaexp = expression;
 
@@ -224,6 +224,6 @@ Abstract Syntax Tree
 
 	commaidasid = id asid*;
 
-	sign = {negative} minus | {possitive}plus;
+	sign = {negative}  | {possitive};
 
 	morevalue = value commavalue* ;
