@@ -97,7 +97,7 @@ Productions
 	power{-> expression} = {something} something {-> something.expression}| 
 			{power} power pow something {-> New expression.pow(power.expression, something.expression)};
 			
-	morevalue = value commavalue* {-> New morevalue(value, [commavalue])};
+	/*morevalue = value commavalue* {-> New morevalue(value, [commavalue])};*/
 	
 	function = def id l_par argument? r_par semi statement {-> New function(id, [argument], statement)};
 	
@@ -126,7 +126,7 @@ Productions
 				{func_call} functioncall {-> New expression.funccall(functioncall)}|
 				{par_exp} l_par expression r_par {-> New expression.par_exp(expression)}|
 				/*according to the BNF, we have at least one value here but we accept zero*/
-				{br_exp} l_br morevalue* r_br {-> New expression.val_comma_val([morevalue])}|
+				{br_exp} l_br value commavalue* r_br {-> New expression.val_comma_val(value, [commavalue])}|
 				{id2} id l_br expression r_br {-> New expression.par_exp(expression)};
 				
 	import = {importas} imp module asid? commamoduleasid* {-> New import.importas(module, [asid], [commamoduleasid])}|
@@ -190,7 +190,7 @@ Abstract Syntax Tree
 				 {value} value |
 				 {id} id |
 				 {par_exp} expression |
-				 {val_comma_val} morevalue*;
+				 {val_comma_val} value commavalue*;
 
 	import = {importas} module asid* commamoduleasid* |
 			 {fromimport} module id asid* commaidasid*;
@@ -227,4 +227,4 @@ Abstract Syntax Tree
 
 	sign = {negative}  | {possitive};
 
-	morevalue = value commavalue* ;
+	/*morevalue = value commavalue* ;*/
