@@ -20,10 +20,18 @@ public class Error
 		m_instance = null;
 	}
 	
-	public void printError(String error)
+	public boolean printError(String error)
 	{
 		m_error_counter++;
 		System.out.println("[Error " + m_error_counter + "] " + error);
+		return true;
+	}
+	
+	public boolean printError(String error, String debug)
+	{
+		m_error_counter++;
+		System.out.println("[Error " + m_error_counter + "] " + error + " [" + debug + "]");
+		return true;
 	}
 	
 	public int getErrorCount()

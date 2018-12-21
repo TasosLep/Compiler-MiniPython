@@ -21,7 +21,7 @@ public class ParserTest
      Visitor1 vstr = new Visitor1(symtable);
      ast.apply(vstr);
      if (vstr.getErrorCount() != 0)
-     	System.out.println("Compilation faild!\nTotal errors: " + vstr.getErrorCount());
+     	System.out.println("Compilation failed!\nTotal errors: " + vstr.getErrorCount());
      else
      	System.out.println("Compilation was successful!");
      /* Gia ton deutero visitor grapste thn entolh
