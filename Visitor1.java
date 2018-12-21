@@ -98,7 +98,7 @@ public class Visitor1 extends DepthFirstAdapter
 						if(!(commaid1.getId().getText()).equals(commaid2.getId().getText()))
 						{
 							symtable.put(fName, node);
-							//return;
+							return;
 						}
 						
 						if (eqval1.size() != eqval2.size())
@@ -135,7 +135,7 @@ public class Visitor1 extends DepthFirstAdapter
 						if(!(commaid1.getId().getText()).equals(commaid2.getId().getText()))
 						{
 							symtable.put(fName, node);
-							//return;
+							return;
 						}
 						
 						if (eqval1.size() != eqval2.size())
