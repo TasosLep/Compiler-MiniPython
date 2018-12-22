@@ -19,15 +19,18 @@ public class ParserTest
      Hashtable symtable =  new Hashtable();
      Start ast = parser.parse();
      Visitor1 vstr = new Visitor1(symtable);
-     ast.apply(vstr);
-     if (vstr.getErrorCount() != 0)
-     	System.out.println("Compilation failed!\nTotal errors: " + vstr.getErrorCount());
-     else
-     	System.out.println("Compilation was successful!");
-     /* Gia ton deutero visitor grapste thn entolh
-      * ast.apply(new mysecondvisitor(symtable));
-      */
-    }
+     Visitor2 vstr2 = new Visitor2(symtable);
+     ast.apply(vstr1);
+     if (vstr1.getErrorCount() != 0)
+      System.out.println("Compilation of Visitor1 failed!\nTotal errors: " + vstr1.getErrorCount());
+     else{
+     	System.out.println("Compilation of Visitor1 was successful!");
+		 ast.apply(vstr2);
+		 if (vstr2.getErrorCount() != 0)
+			System.out.println("Compilation of Visitor2 failed!\nTotal errors: " + vstr2.getErrorCount());
+		 else
+			System.out.println("Compilation of Visitor2 was successful!");
+	 }
     catch (Exception e)
     {
       System.err.println(e);
