@@ -1,4 +1,8 @@
-def add(x,y):
+def add(a = 0,b = 0,g = 0):
 	return x + y
-def add(z,y,z=0):
+
+
+def adds(f,g,h):
 	return x + y + z
+
+

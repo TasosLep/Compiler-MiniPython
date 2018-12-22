@@ -58,11 +58,11 @@ public class Visitor1 extends DepthFirstAdapter
 				// We have to check if all the ids are the same and if so, then we have to throw an error to the user
 				
 				// if the first id is different then we are ok
-				if(!arg1.getId().getText().equals(arg2.getId().getText()))
+				/*if(!arg1.getId().getText().equals(arg2.getId().getText()))
 				{
 					symtable.put(fName, node);
 					return;
-				}
+					}*/
 				// Now we have to find if the two nodes have default arguments in all of their coresponding nodes
 				// 6 on the Symbol_Semantic.html
 				// TODO def add(x, y = 0) and def add(x)
@@ -89,7 +89,7 @@ public class Visitor1 extends DepthFirstAdapter
 						errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test4");
 						//return;
 					}
-					for(int i = 0; i < list1.size(); i++)
+					/*for(int i = 0; i < list1.size(); i++)
 					{
 						ACommaid commaid1 = (ACommaid) list1.get(i);
 						ACommaid commaid2 = (ACommaid) list2.get(i);
@@ -101,9 +101,9 @@ public class Visitor1 extends DepthFirstAdapter
 							return;
 						}
 						
-						/*if (eqval1.size() != eqval2.size())
-							commonIdsDefault = false;*/
-					}
+						//if (eqval1.size() != eqval2.size())
+							//commonIdsDefault = false;
+					}*/
 					// if we get here then because all the ids after the first are the same and
 					// because we know that the argument lists have the same size we must throw an error
 					//if (commonIdsDefault)
@@ -127,8 +127,8 @@ public class Visitor1 extends DepthFirstAdapter
 						big = list2;
 						small = list1;
 					}
-					int i;
-					for(i = 0; i < small.size(); i++)
+					int i = 0;
+					/*for(i = 0; i < small.size(); i++)
 					{
 
 						ACommaid commaid1 = (ACommaid) small.get(i);
@@ -139,11 +139,14 @@ public class Visitor1 extends DepthFirstAdapter
 						{
 							symtable.put(fName, node);
 							return;
-						}
+					   	}
 						
-						/*if (eqval1.size() != eqval2.size())
-							commonIdsDefault = false;*/
-					}
+						//if (eqval1.size() != eqval2.size())
+							//commonIdsDefault = false;
+					}*/
+				
+					if (small.size() != 0)
+						i = small.size();
 					
 					if (big.size() != small.size())
 					{
