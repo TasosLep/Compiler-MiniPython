@@ -49,7 +49,7 @@ public class Visitor2 extends DepthFirstAdapter
 			LinkedList args = node.getArglist();
 			AFunction other = (AFunction)symtable.get(fName);
 			LinkedList other_args = other.getArgument();
-			
+			System.out.println("here");
 
 			//otan perimenei orismata kai emeis dinoume ligotera i perissotera
 			if(other_args.size() != 0 && args.size() != 0){
@@ -78,20 +78,23 @@ public class Visitor2 extends DepthFirstAdapter
 					LinkedList comma_ids = arg1.getCommaid();
 					for(int i = 0; i < comma_ids.size(); i++){
 						LinkedList eqval = ((ACommaid)comma_ids.get(i)).getEqvalue();
-						if(eqval.size() == 1){
+						if(eqval.size() == 0){
 							index_of_first_defaultParam_on_other_args++;
 							break;
 						}
 					}
 				}
+				System.out.println(index_of_first_defaultParam_on_other_args);
 				if(!(args_length <= other_args_length && args_length >= index_of_first_defaultParam_on_other_args)) // checking how many parameters can have as an input without the default parameters
+				{
 					errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName +"the number of parametes doesn't much the number of arguments","aek3");		
-			}	
+					return;
+				}
+			}
 			
-		}
-		else{ 
-			errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName + "is not defined ", "aek4");		
-			return;
+		}else
+		{
+			errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName + "is not defined ", "aek4");			
 		}
 	}	
 	
