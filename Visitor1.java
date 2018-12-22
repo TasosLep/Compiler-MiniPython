@@ -4,28 +4,27 @@ import java.util.*;
 
 public class Visitor1 extends DepthFirstAdapter 
 {
-	private Hashtable symtable;	
+	private Hashtable symtable;
+	private Hashtable symtable_var;
 	private Error error;
 
-	Visitor1(Hashtable symtable) 
+	Visitor1(Hashtable symtable, Hashtable symtable_var) 
 	{
 		error = Error.getInstance();
 		this.symtable = symtable;
+		this.symtable_var = symtable_var;
 	}
 	
-	/*public void inAIdExpExpression(AIdExpExpression node)
+	//Find out if this variable(identifier) has been initialized (exists)
+	public void inAEqualsStatement(AEqualsStatement node)
     {
+		boolean errorOccurred = false;
         String vName = node.getId().toString();
 		int line = ((TId) node.getId()).getLine();
-		if (symtable.containsKey(vName))
-		{
-			error.printError("Line " + line + ": " +" Variable " + vName +" is already defined");
-		}
-		else
-		{
-			symtable.put(vName, node);
-		}
-    }*/
+		
+		symtable_var.put(vName, node);
+		
+    }
 	
 	/*
 		TODO def foo(a) and def foo(b) -> error must be thrown
