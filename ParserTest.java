@@ -17,9 +17,10 @@ public class ParserTest
         new FileReader(args[0].toString()), 1024)));
 
      Hashtable symtable =  new Hashtable();
+	 Hashtable symtable_var = new Hashtable();
      Start ast = parser.parse();
-     Visitor1 vstr1 = new Visitor1(symtable);
-     Visitor2 vstr2 = new Visitor2(symtable);
+     Visitor1 vstr1 = new Visitor1(symtable,symtable_var);
+     Visitor2 vstr2 = new Visitor2(symtable,symtable_var);
      ast.apply(vstr1);
      if (vstr1.getErrorCount() != 0)
       System.out.println("Compilation of Visitor1 failed!\nTotal errors: " + vstr1.getErrorCount());
