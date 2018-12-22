@@ -5,14 +5,12 @@ import java.util.*;
 public class Visitor2 extends DepthFirstAdapter 
 {
 	private Hashtable symtable;	
-	private Hashtable funcVariables;
 	private Error error;
 
 	Visitor2(Hashtable symtable) 
 	{
 		error = Error.getInstance();
 		this.symtable = symtable;
-		funcVariables = new Hashtable();
 	}
 
 	//Find out if this function we are calling exists
@@ -22,17 +20,13 @@ public class Visitor2 extends DepthFirstAdapter
         String fName = node.getId().toString();
 		int line = ((TId) node.getId()).getLine();
 		
+		// checking if the function call has ever been declared
 		if(symtable.containsKey(fName)){
 			LinkedList args = node.getArglist();
 			AFunction other = (AFunction)symtable.get(fName);
 			LinkedList other_args = other.getArgument();
 			
-			//dinoume ligotera orismata apo oti prepei
-	//		if((other_args.size() == 0 && args.size() != 0) || (other_args.size() != 0 && args.size() == 0) )// p() ή p(200)
-//			{
-		//		errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName +" the number of parametes doesn't much the number of arguments","aek1");
-//				return;
-	//		}
+
 			//otan perimenei orismata kai emeis dinoume ligotera i perissotera
 			if(other_args.size() != 0 && args.size() != 0){
 				//prepei na metrisoume posa arguments 8eloume
@@ -48,7 +42,7 @@ public class Visitor2 extends DepthFirstAdapter
 			//	System.out.println(args_length);
 
 				if(args_length > other_args_length){			
-					errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName + " the number of parametes doesn't much the number of arguments","aek2");
+					errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName + "the number of parametes doesn't much the number of arguments","aek2");
 					return;
 				}
 				
@@ -66,111 +60,19 @@ public class Visitor2 extends DepthFirstAdapter
 						}
 					}
 				}
-				if(!(args_length <= other_args_length && args_length >= index_of_first_defaultParam_on_other_args))
-					errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName +" the number of parametes doesn't much the number of arguments","aek3");
-			
-			}
-			
-			
-			
-			
-			
-			
-			
-				
-				// We have to check if all the ids are the same and if so, we are ok
-				
-			//	AArgument arg1 = (AArgument) args.; 
-		//		AArgument arg2 = (AArgument) other_args.get(0);
-				
-				// if the first id is different then we are ok
-			//	if(!arg1.getId().getText().equals(arg2.getId().getText()))
-				//{
-					//symtable.put(fName, node);
-					//return;
-				//}
-				
-				//if()
-				
-				//if(arg1.get())
-				//System.out.println(arg1.toString());
-			
-			//int args = 		
-			
-	//		HashMap checks = new HashMap<String,Boolean>();
-		//	checks = doChecks(node);
-			
-			
-		//	if (!((boolean) checks.get("functionNameExists") && (boolean) checks.get("functionCallCovered"))) {
-			//if (!(boolean) checks.get("functionNameExists")) {
-				//errorOccurred = error.printError("Line " + line + ": " + "Function " + fName + " is not defined!");
-			//} else if (!(boolean) checks.get("functionCallCovered")) {
-				//System.out.println("Line " + line + ": " + "No appropriate overloaded version of function " + fName + " was found!");
-	//		}
-			
-	//		return;
-//}
-
-			
-				//if()
-			//	if(arg1.size() != arg2.size())
-			//		return;
-				
-			//}
+				if(!(args_length <= other_args_length && args_length >= index_of_first_defaultParam_on_other_args)) // checking how many parameters can have as an input without the default parameters
+					errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName +"the number of parametes doesn't much the number of arguments","aek3");		
+			}	
 			
 		}
-	}
-	
-	public HashMap<String,Boolean> doChecks(AFunctioncall node) {
-		boolean functionNameExists = false;
-		boolean functionCallCovered = false;
-		
-		String funcName = node.getId().toString().trim();
-		
-		Set<String> keySet = symtable.keySet();
-		Iterator<String> iterator = keySet.iterator();
-		String key;
-		int numberOfArguments = 0;
-		int minimumRequiredArguments = 0;
-		int defaultArguments = 0;
-		
-		LinkedList nodeArguments = node.getArglist();
-		
-		if (nodeArguments.size() == 1) {
-			AArglist argList = (AArglist) nodeArguments.get(0);
-			numberOfArguments = ((LinkedList) argList.getCommaexp()).size() + 1;
+		else{ 
+			errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName + "is not defined ", "aek4");		
+			return;
 		}
-		
-		while (iterator.hasNext()) { 
-			key = iterator.next();
-			
-			if (key.contains(funcName)) {
-				if (!functionNameExists) {
-					functionNameExists = true;
-				}
-				
-				minimumRequiredArguments = Integer.valueOf(key.substring(key.indexOf("-") + 1, key.indexOf("_")));
-				defaultArguments = Integer.valueOf(key.substring(key.indexOf("_") + 1));
-				
-				if (numberOfArguments >= minimumRequiredArguments && numberOfArguments <= minimumRequiredArguments + defaultArguments) {
-					functionCallCovered = true;
-					break;
-				}
-			}
-		}
-		
-		HashMap checks = new HashMap<String,Boolean>();
-		checks.put("functionNameExists", functionNameExists);
-		checks.put("functionCallCovered", functionCallCovered);
-		
-		return checks;
-	}
-	
+	}	
 	
 	public int getErrorCount()
     {
     	return error.getErrorCount();
-    }
-	
-	
+    }	
 }
