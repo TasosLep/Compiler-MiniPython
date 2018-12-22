@@ -18,7 +18,7 @@ public class ParserTest
 
      Hashtable symtable =  new Hashtable();
      Start ast = parser.parse();
-     Visitor1 vstr = new Visitor1(symtable);
+     Visitor1 vstr1 = new Visitor1(symtable);
      Visitor2 vstr2 = new Visitor2(symtable);
      ast.apply(vstr1);
      if (vstr1.getErrorCount() != 0)
@@ -31,6 +31,7 @@ public class ParserTest
 		 else
 			System.out.println("Compilation of Visitor2 was successful!");
 	 }
+	}
     catch (Exception e)
     {
       System.err.println(e);
