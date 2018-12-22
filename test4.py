@@ -1,19 +1,11 @@
-def add(a = 0,b = 0,g = 0):
-	return x + y
-k = 0
+katii =  0
+def add(x = 0,y = 0,g = 0):
+	return x + y + gagag
+
+k =0
 print k
 
-def adds(f,g,h):
+def adds(x,y,z):
 	return x + y + z
-	
-g(8)
-p(0)
-
-def p(x,y,z=3,p=5):
-	return 5
-
-p(200,235)
-p(0,0,0,0)
-p(0,0,0)
-
-b = g(7)
+for kati in katii:
+	print k

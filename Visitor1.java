@@ -21,8 +21,105 @@ public class Visitor1 extends DepthFirstAdapter
 		boolean errorOccurred = false;
         String vName = node.getId().toString();
 		int line = ((TId) node.getId()).getLine();
+		symtable_var.put(vName, node);		
+    }
+	
+	public void inAForStatement(AForStatement node)
+    {
+		boolean errorOccurred = false;
+		String vName = node.getRightId().toString();
+		int line = ((TId) node.getRightId()).getLine();
+		if (!node.getRightId().getText().equals(node.getLeftId().getText()) && !symtable_var.containsKey(vName))
+		{
+			errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined", "aek88");
+		}
+    }
+	
+	
+	public void inAIdExpression(AIdExpression node)
+    {
+		boolean errorOccurred = false;
+        String vName = node.getId().toString();
+		int line = ((TId) node.getId()).getLine();
 		
-		symtable_var.put(vName, node);
+		//getting return statement parameters
+		Node parent = node.parent();	
+
+		while (parent != null && !(parent instanceof AReturnStatement) && !(parent instanceof AForStatement)){
+			//System.out.println(vName + " " + parent.getClass());
+
+			parent = parent.parent();
+		}
+			
+		if(parent instanceof AReturnStatement)
+		{
+			while (parent != null && (!(parent instanceof AFunction))){
+				parent = parent.parent();
+			}
+			if(parent != null)
+			{
+				AFunction func = (AFunction) parent;
+				LinkedList func_args = func.getArgument();
+				if (func_args.size() != 0)
+				{
+					AArgument arg = (AArgument) func_args.get(0);
+					// check if the current id is the first argument
+					if (!node.getId().getText().equals(arg.getId().getText()))
+					{
+						LinkedList cids = arg.getCommaid();
+						boolean found = false;
+						for(int i = 0; i < cids.size(); ++i)
+						{
+							ACommaid cid = (ACommaid)cids.get(i);
+							if (node.getId().getText().equals(cid.getId().getText()))
+							{
+								found = true;
+								break;
+							}
+						}
+						if (!found)
+						{
+							// we are sure that the id is defined inside the scope of the function
+							if (!symtable_var.containsKey(vName))
+							{
+								String fName = func.getId().getText();
+								errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in the scope of function " + fName, "aek66");
+								return;
+							}
+						}
+					}
+
+				}
+			}
+			return;
+			
+		}else if(parent instanceof AForStatement)
+		{
+			//System.out.println("instanceof for");
+			if(parent != null)
+			{
+				AForStatement fors = (AForStatement) parent;
+				//System.out.println(fors.getLeftId().getText());
+				if (!fors.getLeftId().getText().equals(node.getId().getText()))
+				{
+					if (!symtable_var.containsKey(vName))
+					{
+						errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in the scope of the for statement", "aek77");
+						return;
+					}
+				}
+				// we are sure that the id is defined inside the scope of the for statement
+				return;
+			}
+			
+		}
+		//checking if a variable is included in symtable_var hashtable
+		if (!(symtable_var.containsKey(vName)))
+		{
+			errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in this scope", "aek55");
+			return;
+		}
+		
 		
     }
 	

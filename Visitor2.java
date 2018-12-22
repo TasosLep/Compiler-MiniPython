@@ -23,32 +23,15 @@ public class Visitor2 extends DepthFirstAdapter
         String vName = node.getId().toString();
 		int line = ((TId) node.getId()).getLine();
 		
-		//checking if a variable is included in symtable_var hashtable
-		if (!(symtable_var.containsKey(vName)))
-		{
-			errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is already defined");
-		}
-		
 		//getting return statement parameters
 		Node parent = node.parent();
-	//	System.out.println(parent.getClass());
-	//	System.out.println(node);
-		while (parent != null && (!(parent instanceof AReturnStatement))){
-			parent = parent.parent();
-		}
-			
-		if(parent instanceof AReturnStatement){
-			while (parent != null && (!(parent instanceof AFunction))){
-				parent = parent.parent();
-			} 
-			if(parent != null){
-				AFunction func = (AFunction) parent;
-				LinkedList func_args = func.getArgument();
-				
-				AArgument other_func_args = (AArgument) func_args.get(0);
-				//System.out.println(((AFunction)parent).getId() + "aekara");
-			}
-		}
+
+		//checking if a variable is included in symtable_var hashtable
+		/*if (!(symtable_var.containsKey(vName)))
+		{
+			errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in this scope", "aek55");
+			return;
+		}*/
 		
     }
 	
