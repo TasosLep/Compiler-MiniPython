@@ -50,7 +50,7 @@ public class Visitor1 extends DepthFirstAdapter
 				if(args.size() == 0)
 				{
 					errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test5");
-					//return;
+					return;
 				}
 				AArgument arg1 = (AArgument) args.get(0); 
 				AArgument arg2 = (AArgument) other_args.get(0);
@@ -68,19 +68,19 @@ public class Visitor1 extends DepthFirstAdapter
 				// TODO def add(x, y = 0) and def add(x)
 				// This variable is true when all common arguments are of the same "type"
 				// e.g it's true when a pair of common args, both have a default value or both have not
-				boolean commonIdsDefault = true;
+				//boolean commonIdsDefault = true;
 				
 				// if one of the args has not a default value at its first id while the other has 
 				// then we are sure that they are not the same
-				if ((arg1.getEqvalue().size() == 0 && arg2.getEqvalue().size() != 0) || (arg1.getEqvalue().size() != 0 && arg2.getEqvalue().size() == 0))
-					commonIdsDefault = false;
-				
-				
+				//if ((arg1.getEqvalue().size() == 0 && arg2.getEqvalue().size() != 0) || (arg1.getEqvalue().size() != 0 && arg2.getEqvalue().size() == 0))
+				//commonIdsDefault = false;
+					
 				LinkedList list1;
 				LinkedList list2;
 					
 				list1 = arg1.getCommaid();	
 				list2 = arg2.getCommaid();
+
 				if(list1.size() == list2.size())
 				{
 					if (list1.size() == 0)
@@ -101,17 +101,19 @@ public class Visitor1 extends DepthFirstAdapter
 							return;
 						}
 						
-						if (eqval1.size() != eqval2.size())
-							commonIdsDefault = false;
+						/*if (eqval1.size() != eqval2.size())
+							commonIdsDefault = false;*/
 					}
 					// if we get here then because all the ids after the first are the same and
 					// because we know that the argument lists have the same size we must throw an error
-					if (!commonIdsDefault)
-					{	errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test3");
+					//if (commonIdsDefault)
+					//{
+						errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test3");
 						//return;
-					}
+					//}
 				}else
 				{
+
 					// If the arguments have lists of different sizes
 					// we find the smalest and the longet lsit
 					LinkedList small = null, big = null;
@@ -128,6 +130,7 @@ public class Visitor1 extends DepthFirstAdapter
 					int i;
 					for(i = 0; i < small.size(); i++)
 					{
+
 						ACommaid commaid1 = (ACommaid) small.get(i);
 						ACommaid commaid2 = (ACommaid) big.get(i);
 						LinkedList eqval1 = commaid1.getEqvalue();
@@ -138,31 +141,29 @@ public class Visitor1 extends DepthFirstAdapter
 							return;
 						}
 						
-						if (eqval1.size() != eqval2.size())
-							commonIdsDefault = false;
+						/*if (eqval1.size() != eqval2.size())
+							commonIdsDefault = false;*/
 					}
 					
 					if (big.size() != small.size())
 					{
+						
 						ACommaid commaid = (ACommaid) big.get(i);
 						LinkedList eqval = commaid.getEqvalue();
 						if (eqval.size() != 0)
 						{
-							System.out.println("test");
-							commonIdsDefault = false;
+							//commonIdsDefault = false;
 							errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test7");
 							//return;
 						}
 					}
-					
-					
 				}
 
-				if (commonIdsDefault)
+				/*if (commonIdsDefault)
 				{
 					errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test6");
-					//return;
-				}
+					/eturn;
+					}*/
 			}else if (args.size() != 0 && other_args.size() == 0)
 			{
 				// Here we must check if the two functions have the same name but one of them has 
