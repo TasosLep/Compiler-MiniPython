@@ -49,7 +49,7 @@ public class Visitor2 extends DepthFirstAdapter
 			LinkedList args = node.getArglist();
 			AFunction other = (AFunction)symtable.get(fName);
 			LinkedList other_args = other.getArgument();
-			System.out.println("here");
+			//System.out.println("here");
 
 			//otan perimenei orismata kai emeis dinoume ligotera i perissotera
 			if(other_args.size() != 0 && args.size() != 0){
@@ -84,12 +84,30 @@ public class Visitor2 extends DepthFirstAdapter
 						}
 					}
 				}
-				System.out.println(index_of_first_defaultParam_on_other_args);
+				//System.out.println(index_of_first_defaultParam_on_other_args);
 				if(!(args_length <= other_args_length && args_length >= index_of_first_defaultParam_on_other_args)) // checking how many parameters can have as an input without the default parameters
 				{
 					errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName +"the number of parametes doesn't much the number of arguments","aek3");		
 					return;
 				}
+			}else if (other_args.size() != 0 && args.size() == 0)
+			{
+					AArgument arg1 = (AArgument) other_args.get(0);
+					int countNoneDefault = 0;
+					if (arg1.getEqvalue().size() == 0)
+						countNoneDefault++;
+					LinkedList comma_ids = arg1.getCommaid();
+					for(int i = 0; i < comma_ids.size(); i++){
+						LinkedList eqval = ((ACommaid)comma_ids.get(i)).getEqvalue();
+						if(eqval.size() == 0){
+							countNoneDefault++;
+						}
+					}
+					
+					if (countNoneDefault != 0)
+					{
+						errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName +"the number of parametes doesn't much the number of arguments","aek4");		
+					}
 			}
 			
 		}else
