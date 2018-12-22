@@ -261,6 +261,59 @@ public class Visitor1 extends DepthFirstAdapter
 			}
 			
 		}
+
+		// We check if the function definition contains an argument with a name that has already been used in a previous argument.
+		// We must parse the arguments and throw an error if the previous happens.
+		LinkedList args = node.getArgument();
+		if (args.size() != 0)
+		{
+			HashSet<String> duplicatedIds = new HashSet<String>();
+			AArgument arg = (AArgument)args.get(0);
+			String currentIdName = arg.getId().getText(), duplicatedIdNames = "";
+			LinkedList comids = arg.getCommaid();
+			
+			for (int i = 0; i < comids.size(); ++i)
+			{
+				ACommaid cid = (ACommaid)comids.get(i);
+				if (cid.getId().getText().equals(currentIdName))
+				{
+					System.out.println("hereee");
+					duplicatedIds.add(currentIdName);
+					//errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" duplicate argument " + currentIdName +" in function definition ", "test_same_args");
+				}
+			}
+			if (comids.size() != 0)
+			{				
+				for (int i = 0; i < comids.size() - 1; ++i)
+				{
+					currentIdName = ((ACommaid)comids.get(i)).getId().getText();
+					for (int j = i+1; j < comids.size(); ++j)
+					{
+						ACommaid cid = (ACommaid)comids.get(j);
+						if (cid.getId().getText().equals(currentIdName))
+						{
+							duplicatedIds.add(currentIdName);
+							//errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" duplicate argument " + currentIdName +" in function definition ", "test_same_args");
+							break;
+						}
+					}
+				}
+			}
+
+			if (duplicatedIds.size() != 0)
+			{
+				String msg = "";
+				Iterator iter = duplicatedIds.iterator();
+				while (iter.hasNext())
+				{
+					msg += " " + iter.next();
+				}
+				errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" duplicate argument(s)" + msg +" in function definition ", "test_same_args");
+			}
+		
+
+		}
+		
 		// if a function produces at least one error, then it is not inserted into the symbol table (is this the correct behavior?)
 		if (!errorOccurred)
 			symtable.put(fName, node);

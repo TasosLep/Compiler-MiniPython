@@ -1,6 +1,4 @@
-print(fun1(1,2))
-
-def add(x):
-	return 1
-def add(x = 0):
-	return 3
+def add(x,y):
+	return x + y
+def add(z,y,z=0):
+	return x + y + z
