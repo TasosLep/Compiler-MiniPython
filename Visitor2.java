@@ -13,29 +13,7 @@ public class Visitor2 extends DepthFirstAdapter
 		error = Error.getInstance();
 		this.symtable = symtable;
 		this.symtable_var = symtable_var;
-	}
-	
-	
-	//Find out if this variable(identifier) has been initialized (exists)
-	public void inAIdExpression(AIdExpression node)
-    {
-		boolean errorOccurred = false;
-        String vName = node.getId().toString();
-		int line = ((TId) node.getId()).getLine();
-		
-		//getting return statement parameters
-		Node parent = node.parent();
-
-		//checking if a variable is included in symtable_var hashtable
-		/*if (!(symtable_var.containsKey(vName)))
-		{
-			errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in this scope", "aek55");
-			return;
-		}*/
-		
-    }
-	
-	
+	}	
 
 	//Find out if this function we are calling exists
 	public void inAFunctioncall (AFunctioncall node)

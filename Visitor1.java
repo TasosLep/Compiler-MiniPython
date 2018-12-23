@@ -45,13 +45,13 @@ public class Visitor1 extends DepthFirstAdapter
 		//getting return statement parameters
 		Node parent = node.parent();	
 
-		while (parent != null && !(parent instanceof AReturnStatement) && !(parent instanceof AForStatement)){
+		while (parent != null && !(parent instanceof AReturnStatement) && !(parent instanceof AForStatement) && !(parent instanceof AFunction)){
 			//System.out.println(vName + " " + parent.getClass());
-
+			
 			parent = parent.parent();
 		}
 			
-		if(parent instanceof AReturnStatement)
+		if(parent instanceof AReturnStatement || parent instanceof AFunction)
 		{
 			while (parent != null && (!(parent instanceof AFunction))){
 				parent = parent.parent();
@@ -91,9 +91,16 @@ public class Visitor1 extends DepthFirstAdapter
 
 				}else
 				{
-					String fName = func.getId().getText();
-					errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in the scope of function " + fName, "aek666");
-					return;
+					// we are sure that the id is defined inside the scope of the function
+					if (!symtable_var.containsKey(vName))
+					{
+						String fName = func.getId().getText();
+						errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in the scope of function " + fName, "aek66");
+						return;
+					}
+					//String fName = func.getId().getText();
+					//errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in the scope of function " + fName, "aek666");
+					//return;
 				}
 			}
 			return;
