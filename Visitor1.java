@@ -89,6 +89,11 @@ public class Visitor1 extends DepthFirstAdapter
 						}
 					}
 
+				}else
+				{
+					String fName = func.getId().getText();
+					errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in the scope of function " + fName, "aek666");
+					return;
 				}
 			}
 			return;
@@ -150,26 +155,6 @@ public class Visitor1 extends DepthFirstAdapter
 				}
 				AArgument arg1 = (AArgument) args.get(0); 
 				AArgument arg2 = (AArgument) other_args.get(0);
-				
-				// We have to check if all the ids are the same and if so, then we have to throw an error to the user
-				
-				// if the first id is different then we are ok
-				/*if(!arg1.getId().getText().equals(arg2.getId().getText()))
-				{
-					symtable.put(fName, node);
-					return;
-					}*/
-				// Now we have to find if the two nodes have default arguments in all of their coresponding nodes
-				// 6 on the Symbol_Semantic.html
-				// TODO def add(x, y = 0) and def add(x)
-				// This variable is true when all common arguments are of the same "type"
-				// e.g it's true when a pair of common args, both have a default value or both have not
-				//boolean commonIdsDefault = true;
-				
-				// if one of the args has not a default value at its first id while the other has 
-				// then we are sure that they are not the same
-				//if ((arg1.getEqvalue().size() == 0 && arg2.getEqvalue().size() != 0) || (arg1.getEqvalue().size() != 0 && arg2.getEqvalue().size() == 0))
-				//commonIdsDefault = false;
 					
 				LinkedList list1;
 				LinkedList list2;
@@ -179,34 +164,9 @@ public class Visitor1 extends DepthFirstAdapter
 
 				if(list1.size() == list2.size())
 				{
-					if (list1.size() == 0)
-					{
-						// there are no other arguments after the first one
-						errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test4");
-						//return;
-					}
-					/*for(int i = 0; i < list1.size(); i++)
-					{
-						ACommaid commaid1 = (ACommaid) list1.get(i);
-						ACommaid commaid2 = (ACommaid) list2.get(i);
-						LinkedList eqval1 = commaid1.getEqvalue();
-						LinkedList eqval2 = commaid2.getEqvalue();
-						if(!(commaid1.getId().getText()).equals(commaid2.getId().getText()))
-						{
-							symtable.put(fName, node);
-							return;
-						}
-						
-						//if (eqval1.size() != eqval2.size())
-							//commonIdsDefault = false;
-					}*/
-					// if we get here then because all the ids after the first are the same and
-					// because we know that the argument lists have the same size we must throw an error
-					//if (commonIdsDefault)
-					//{
-						errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test3");
-						//return;
-					//}
+					// Same name and argument number
+					errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test3");
+					//return;
 				}else
 				{
 
@@ -224,55 +184,37 @@ public class Visitor1 extends DepthFirstAdapter
 						small = list1;
 					}
 					int i = 0;
-					/*for(i = 0; i < small.size(); i++)
-					{
-
-						ACommaid commaid1 = (ACommaid) small.get(i);
-						ACommaid commaid2 = (ACommaid) big.get(i);
-						LinkedList eqval1 = commaid1.getEqvalue();
-						LinkedList eqval2 = commaid2.getEqvalue();
-						if(!(commaid1.getId().getText()).equals(commaid2.getId().getText()))
-						{
-							symtable.put(fName, node);
-							return;
-					   	}
-						
-						//if (eqval1.size() != eqval2.size())
-							//commonIdsDefault = false;
-					}*/
-				
+					
 					if (small.size() != 0)
 						i = small.size();
 					
-					if (big.size() != small.size())
-					{
 						
-						ACommaid commaid = (ACommaid) big.get(i);
-						LinkedList eqval = commaid.getEqvalue();
-						if (eqval.size() != 0)
-						{
-							//commonIdsDefault = false;
-							errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test7");
-							//return;
-						}
+					ACommaid commaid = (ACommaid) big.get(i);
+					LinkedList eqval = commaid.getEqvalue();
+					if (eqval.size() != 0)
+					{
+						//commonIdsDefault = false;
+						errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test7");
+						//return;
 					}
 				}
-
-				/*if (commonIdsDefault)
-				{
-					errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test6");
-					/eturn;
-					}*/
-			}else if (args.size() != 0 && other_args.size() == 0)
+			}else
 			{
 				// Here we must check if the two functions have the same name but one of them has 
 				// default arguments(case 6 on the Symbol_Semantic.html)
-				
 				// def add(x = 0, y = 0) and def add() -> should throw an error
+				LinkedList hasArgs = null, hasNotArgs = null;
+				if (args.size() != 0)
+				{
+					hasArgs = args;
+					hasNotArgs = other_args;
+				}else
+				{
+					hasArgs = other_args;
+					hasNotArgs = args;
+				}
 			
-				// first we have to chech the case in which a node has args while the other doesn't
-			
-				AArgument argument = (AArgument)args.get(0);
+				AArgument argument = (AArgument)hasArgs.get(0);
 				AEqvalue eqval = null;
 				LinkedList comids = null;
 				// now we have to check if every id has a default value
@@ -296,37 +238,7 @@ public class Visitor1 extends DepthFirstAdapter
 						errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test1");
 						//return;
 					}
-				}
-				
-		
-				
-			}else if (args.size() == 0 && other_args.size() != 0)
-			{
-				AArgument argument = (AArgument)other_args.get(0);
-				AEqvalue eqval = null;
-				LinkedList comids = null;
-				// now we have to check if every id has a default value
-				// if it does then an error must be thrown
-				if (argument.getEqvalue().size() != 0)
-				{
-					boolean isAllDefault = true;
-					comids = argument.getCommaid();
-					for (int i = 0; i < comids.size(); ++i)
-					{
-						LinkedList vallist = ((ACommaid)comids.get(i)).getEqvalue();
-						if (vallist.size() == 0)
-						{
-							isAllDefault = false;
-							break;
-						}
-					}
-					
-					if (isAllDefault)
-					{
-						errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" is already defined", "test2");
-						//return;
-					}
-				}
+				}	
 			}				
 		}
 		
@@ -415,7 +327,10 @@ public class Visitor1 extends DepthFirstAdapter
 		
 		// if a function produces at least one error, then it is not inserted into the symbol table (is this the correct behavior?)
 		if (!errorOccurred)
+		{
+			//System.out.println("Function " + fName + " was added");
 			symtable.put(fName, node);
+		}
     }
     
     public int getErrorCount()

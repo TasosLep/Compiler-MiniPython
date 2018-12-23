@@ -112,7 +112,7 @@ public class Visitor2 extends DepthFirstAdapter
 			
 		}else
 		{
-			errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName + "is not defined ", "aek4");			
+			errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName + "is not defined ", "aek42");			
 		}
 	}	
 	
