@@ -24,6 +24,26 @@ public class Visitor1 extends DepthFirstAdapter
 		symtable_var.put(vName, node);		
     }
 	
+	private boolean checkValues(PExpression l, PExpression r, String op)
+	{
+		boolean errorOccurred = false;
+		PValue lv = null, rv = null;
+		
+		if (l instanceof AValueExpression && r instanceof AValueExpression)
+		{
+			lv = ((AValueExpression)l).getValue();
+			rv = ((AValueExpression)r).getValue();
+			if (lv instanceof ANumberValue && rv instanceof AStringValue)
+			{
+				errorOccurred = error.printError("Line " /*+ line*/ + ": " +"  " + "unsupported operand type(s) for "+ op + ": 'number' and 'str'", "add1");
+			}else if (lv instanceof AStringValue && rv instanceof ANumberValue)
+			{
+				errorOccurred = error.printError("Line " /*+ line*/+ ": " +"  " + "unsupported operand type(s) for "+ op + ": 'str' and 'number'", "add1");
+			}
+		}
+		return errorOccurred;
+	}
+	
 	public void inAForStatement(AForStatement node)
     {
 		boolean errorOccurred = false;
@@ -31,11 +51,65 @@ public class Visitor1 extends DepthFirstAdapter
 		int line = ((TId) node.getRightId()).getLine();
 		if (!node.getRightId().getText().equals(node.getLeftId().getText()) && !symtable_var.containsKey(vName))
 		{
-			errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined", "aek88");
+			errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in this scope", "aek88");
 		}
     }
 	
+	public void inAAddExpression(AAddExpression node)
+    {
+        boolean errorOccurred = false;
+		String vName = node.getL().toString();
+		//int line = ((TId) node.getL()).getLine();
+		PExpression l = null, r = null;
+		l = node.getL();
+		r = node.getR();
+		checkValues(l,r,"+");	
+    }
 	
+	public void inAMultExpression(AMultExpression node)
+	{
+		boolean errorOccurred = false;
+		String vName = node.getL().toString();
+		//int line = ((TId) node.getL()).getLine();
+		PExpression l = null, r = null;
+		l = node.getL();
+		r = node.getR();
+		checkValues(l,r,"*");
+	}
+	
+	public void inADivExpression(ADivExpression node)
+	{
+		boolean errorOccurred = false;
+		String vName = node.getL().toString();
+		//int line = ((TId) node.getL()).getLine();
+		PExpression l = null, r = null;
+		l = node.getL();
+		r = node.getR();
+		checkValues(l,r,"/");
+	}
+	
+	public void inAPowExpression(APowExpression node)
+	{
+		boolean errorOccurred = false;
+		String vName = node.getL().toString();
+		//int line = ((TId) node.getL()).getLine();
+		PExpression l = null, r = null;
+		l = node.getL();
+		r = node.getR();
+		checkValues(l,r,"**");
+	}
+	
+	public void inASubExpression(ASubExpression node)
+	{
+		boolean errorOccurred = false;
+		String vName = node.getL().toString();
+		//int line = ((TId) node.getL()).getLine();
+		PExpression l = null, r = null;
+		l = node.getL();
+		r = node.getR();
+		checkValues(l,r,"-");
+	}
+
 	public void inAIdExpression(AIdExpression node)
     {
 		boolean errorOccurred = false;
@@ -95,7 +169,7 @@ public class Visitor1 extends DepthFirstAdapter
 					if (!symtable_var.containsKey(vName))
 					{
 						String fName = func.getId().getText();
-						errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in the scope of function " + fName, "aek66");
+						errorOccurred = error.printError("Line " + line + ": " +" Variable " + vName + "is not defined in the scope of function " + fName, "aek661");
 						return;
 					}
 					//String fName = func.getId().getText();
@@ -295,7 +369,7 @@ public class Visitor1 extends DepthFirstAdapter
 				ACommaid cid = (ACommaid)comids.get(i);
 				if (cid.getId().getText().equals(currentIdName))
 				{
-					System.out.println("hereee");
+					//System.out.println("hereee");
 					duplicatedIds.add(currentIdName);
 					//errorOccurred = error.printError("Line " + line + ": " +" Function " + fName +" duplicate argument " + currentIdName +" in function definition ", "test_same_args");
 				}
