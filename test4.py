@@ -1,16 +1,5 @@
-def foo(x=0):
-	print x
-def pepe(y):
-	return y
+x = 2
+y = 'pepe'
 
-def lol(a,b):
-	print a + b
-assert k == k
-z = 0
-for goo in k:
-	print goo
-for goo in z:
-	print goo
-x = 'pepepep'
-t = 2
-lol(x,t)
+variable = doesNotExist + 2
+doesNotExist = 0

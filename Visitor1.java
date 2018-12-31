@@ -31,7 +31,7 @@ public class Visitor1 extends DepthFirstAdapter
 		boolean errorOccurred = false;
         String vName = node.getId().toString();
 		int line = ((TId) node.getId()).getLine();
-		PValue v = getValue(node.getExpression());
+		PValue v = (PValue)expressionType.get(node.getExpression().toString());
 		//System.out.println(vName + " = " + v);
 		// If the assignment expression did not produce any errors
 		if (v != null)
@@ -40,35 +40,10 @@ public class Visitor1 extends DepthFirstAdapter
 		}
 	}
 	
-	private PValue getValue(PExpression exp)
+	private boolean throwErrorOrAccept(PExpression mainExp, PValue lv, PValue rv, String op)
 	{
 		boolean errorOccurred = false;
-		PValue v = null;
-		
-		if (exp instanceof AValueExpression)
-		{
-			v = ((AValueExpression)exp).getValue();
-			//System.out.println("l is a value");
-		}else if (exp instanceof AIdExpression)
-		{
-			String vName = ((AIdExpression)exp).getId().toString();
-			v = (PValue)expressionType.get(((AIdExpression)exp).getId().toString());
-			/*if (v instanceof AStringValue)
-				System.out.println(vName + " = StringValue");
-			else
-				System.out.println(vName + " = NumberValue");*/
-		}else
-		{
-			v = (PValue)expressionType.get(exp.toString());
-		}
-		
-		return v;
-	}
-	
-	private boolean throwError(PValue lv, PValue rv, String op)
-	{
-		boolean errorOccurred = false;
-		
+		//System.out.println("test " + mainExp);
 		if (lv instanceof ANumberValue && rv instanceof AStringValue && !op.equals("*"))
 		{
 			errorOccurred = error.printError("Line " /*+ line*/ + ": " +"  " + "unsupported operand type(s) for "+ op + ": 'number' and 'str'", "add1");
@@ -78,6 +53,19 @@ public class Visitor1 extends DepthFirstAdapter
 		}else if (lv instanceof AStringValue && rv instanceof AStringValue && !op.equals("+"))
 		{
 			errorOccurred = error.printError("Line " /*+ line*/+ ": " +"  " + "unsupported operand type(s) for "+ op + ": 'str' and 'str'", "add3");
+		}else if (lv instanceof ANumberValue && rv instanceof AStringValue && op.equals("*"))
+		{
+			expressionType.put(mainExp.toString(), new AStringValue());
+		}
+		else if (lv instanceof AStringValue && rv instanceof ANumberValue && op.equals("*"))
+		{
+			expressionType.put(mainExp.toString(), new AStringValue());
+		}else if (lv instanceof ANumberValue && rv instanceof ANumberValue)
+		{
+			expressionType.put(mainExp.toString(), new ANumberValue());
+		}else if (lv instanceof AStringValue && rv instanceof AStringValue && op.equals("+"))
+		{
+			expressionType.put(mainExp.toString(), new AStringValue());
 		}
 		return errorOccurred;
 	}
@@ -91,22 +79,19 @@ public class Visitor1 extends DepthFirstAdapter
 		{
 			lv = ((AValueExpression)l).getValue();
 			rv = ((AValueExpression)r).getValue();
-			errorOccurred = throwError(lv,rv, op);
-			if (!errorOccurred)
-					expressionType.put(mainExp.toString(), new ANumberValue());
+			errorOccurred = throwErrorOrAccept(mainExp, lv, rv, op);
 		}else
 		{
 			// find the type of each operant
-			lv = getValue(l);
-			
-			rv = getValue(r);
+			//lv = getValue(l);
+			lv = (PValue)expressionType.get(l.toString());
+			//rv = getValue(r);
+			rv = (PValue)expressionType.get(r.toString());
 				
 			//System.out.println(rv + " " + lv);
 			if (lv != null && rv != null)
 			{
-				errorOccurred = throwError(lv,rv, op);
-				if (!errorOccurred)
-					expressionType.put(mainExp.toString(), new ANumberValue());
+				errorOccurred = throwErrorOrAccept(mainExp,lv,rv, op);
 			}
 		}
 		
@@ -179,6 +164,19 @@ public class Visitor1 extends DepthFirstAdapter
 		r = node.getR();
 		checkValues(node,l,r,"-");
 	}
+	
+	public void outAValueExpression(AValueExpression node)
+    {
+		expressionType.put(node.toString(), node.getValue());
+    }
+	
+	public void outAIdExpression(AIdExpression node)
+    {
+        String vName = node.getId().toString();
+		PValue v = (PValue)expressionType.get(vName);
+		if (v != null)
+			expressionType.put(node.toString(), v);
+    }
 	
 	public void outAParExpExpression(AParExpExpression node)
     {
