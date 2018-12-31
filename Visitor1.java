@@ -7,12 +7,14 @@ public class Visitor1 extends DepthFirstAdapter
 	private Hashtable symtable;
 	private Hashtable symtable_var;
 	private Error error;
+	private Hashtable expressionType;
 
 	Visitor1(Hashtable symtable, Hashtable symtable_var) 
 	{
 		error = Error.getInstance();
 		this.symtable = symtable;
 		this.symtable_var = symtable_var;
+		expressionType = new Hashtable();
 	}
 	
 	//Find out if this variable(identifier) has been initialized (exists)
@@ -21,10 +23,66 @@ public class Visitor1 extends DepthFirstAdapter
 		boolean errorOccurred = false;
         String vName = node.getId().toString();
 		int line = ((TId) node.getId()).getLine();
-		symtable_var.put(vName, node);		
+		symtable_var.put(vName, node);
     }
 	
-	private boolean checkValues(PExpression l, PExpression r, String op)
+	public void outAEqualsStatement(AEqualsStatement node)
+	{
+		boolean errorOccurred = false;
+        String vName = node.getId().toString();
+		int line = ((TId) node.getId()).getLine();
+		PValue v = getValue(node.getExpression());
+		//System.out.println(vName + " = " + v);
+		// If the assignment expression did not produce any errors
+		if (v != null)
+		{
+			expressionType.put(vName, v);
+		}
+	}
+	
+	private PValue getValue(PExpression exp)
+	{
+		boolean errorOccurred = false;
+		PValue v = null;
+		
+		if (exp instanceof AValueExpression)
+		{
+			v = ((AValueExpression)exp).getValue();
+			//System.out.println("l is a value");
+		}else if (exp instanceof AIdExpression)
+		{
+			String vName = ((AIdExpression)exp).getId().toString();
+			v = (PValue)expressionType.get(((AIdExpression)exp).getId().toString());
+			/*if (v instanceof AStringValue)
+				System.out.println(vName + " = StringValue");
+			else
+				System.out.println(vName + " = NumberValue");*/
+		}else
+		{
+			v = (PValue)expressionType.get(exp.toString());
+		}
+		
+		return v;
+	}
+	
+	private boolean throwError(PValue lv, PValue rv, String op)
+	{
+		boolean errorOccurred = false;
+		
+		if (lv instanceof ANumberValue && rv instanceof AStringValue && !op.equals("*"))
+		{
+			errorOccurred = error.printError("Line " /*+ line*/ + ": " +"  " + "unsupported operand type(s) for "+ op + ": 'number' and 'str'", "add1");
+		}else if (lv instanceof AStringValue && rv instanceof ANumberValue && !op.equals("*"))
+		{
+			errorOccurred = error.printError("Line " /*+ line*/+ ": " +"  " + "unsupported operand type(s) for "+ op + ": 'str' and 'number'", "add2");
+		}else if (lv instanceof AStringValue && rv instanceof AStringValue && !op.equals("+"))
+		{
+			errorOccurred = error.printError("Line " /*+ line*/+ ": " +"  " + "unsupported operand type(s) for "+ op + ": 'str' and 'str'", "add3");
+		}
+		return errorOccurred;
+	}
+	
+	private boolean checkValues(PExpression mainExp, PExpression l, PExpression r, String op)
 	{
 		boolean errorOccurred = false;
 		PValue lv = null, rv = null;
@@ -33,14 +91,25 @@ public class Visitor1 extends DepthFirstAdapter
 		{
 			lv = ((AValueExpression)l).getValue();
 			rv = ((AValueExpression)r).getValue();
-			if (lv instanceof ANumberValue && rv instanceof AStringValue)
+			errorOccurred = throwError(lv,rv, op);
+			if (!errorOccurred)
+					expressionType.put(mainExp.toString(), new ANumberValue());
+		}else
+		{
+			// find the type of each operant
+			lv = getValue(l);
+			
+			rv = getValue(r);
+				
+			//System.out.println(rv + " " + lv);
+			if (lv != null && rv != null)
 			{
-				errorOccurred = error.printError("Line " /*+ line*/ + ": " +"  " + "unsupported operand type(s) for "+ op + ": 'number' and 'str'", "add1");
-			}else if (lv instanceof AStringValue && rv instanceof ANumberValue)
-			{
-				errorOccurred = error.printError("Line " /*+ line*/+ ": " +"  " + "unsupported operand type(s) for "+ op + ": 'str' and 'number'", "add1");
+				errorOccurred = throwError(lv,rv, op);
+				if (!errorOccurred)
+					expressionType.put(mainExp.toString(), new ANumberValue());
 			}
 		}
+		
 		return errorOccurred;
 	}
 	
@@ -55,7 +124,7 @@ public class Visitor1 extends DepthFirstAdapter
 		}
     }
 	
-	public void inAAddExpression(AAddExpression node)
+	public void outAAddExpression(AAddExpression node)
     {
         boolean errorOccurred = false;
 		String vName = node.getL().toString();
@@ -63,10 +132,10 @@ public class Visitor1 extends DepthFirstAdapter
 		PExpression l = null, r = null;
 		l = node.getL();
 		r = node.getR();
-		checkValues(l,r,"+");	
+		checkValues(node,l,r,"+");	
     }
 	
-	public void inAMultExpression(AMultExpression node)
+	public void outAMultExpression(AMultExpression node)
 	{
 		boolean errorOccurred = false;
 		String vName = node.getL().toString();
@@ -74,10 +143,10 @@ public class Visitor1 extends DepthFirstAdapter
 		PExpression l = null, r = null;
 		l = node.getL();
 		r = node.getR();
-		checkValues(l,r,"*");
+		checkValues(node,l,r,"*");
 	}
 	
-	public void inADivExpression(ADivExpression node)
+	public void outADivExpression(ADivExpression node)
 	{
 		boolean errorOccurred = false;
 		String vName = node.getL().toString();
@@ -85,21 +154,22 @@ public class Visitor1 extends DepthFirstAdapter
 		PExpression l = null, r = null;
 		l = node.getL();
 		r = node.getR();
-		checkValues(l,r,"/");
+		checkValues(node,l,r,"/");
 	}
 	
-	public void inAPowExpression(APowExpression node)
+	public void outAPowExpression(APowExpression node)
 	{
+		//System.out.println(node);
 		boolean errorOccurred = false;
 		String vName = node.getL().toString();
 		//int line = ((TId) node.getL()).getLine();
 		PExpression l = null, r = null;
 		l = node.getL();
 		r = node.getR();
-		checkValues(l,r,"**");
+		checkValues(node,l,r,"**");
 	}
 	
-	public void inASubExpression(ASubExpression node)
+	public void outASubExpression(ASubExpression node)
 	{
 		boolean errorOccurred = false;
 		String vName = node.getL().toString();
@@ -107,8 +177,21 @@ public class Visitor1 extends DepthFirstAdapter
 		PExpression l = null, r = null;
 		l = node.getL();
 		r = node.getR();
-		checkValues(l,r,"-");
+		checkValues(node,l,r,"-");
 	}
+	
+	public void outAParExpExpression(AParExpExpression node)
+    {
+		//System.out.println("start out parExp " + node);
+        PExpression exp = node.getExpression();
+		//System.out.println("pepepepe");
+		PValue expVal = (PValue)expressionType.get(exp.toString());
+		//System.out.println("poopopopopop");
+		//System.out.println(expVal == null ? "NULL EXPVAL" : "NOT NULL EXPVAL");
+		if (expVal != null)
+			expressionType.put(node.toString(), expVal);
+		//System.out.println("end of out parExp");
+    }
 
 	public void inAIdExpression(AIdExpression node)
     {
