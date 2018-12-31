@@ -30,7 +30,8 @@ public class Visitor2 extends DepthFirstAdapter
 			//System.out.println("here");
 
 			//otan perimenei orismata kai emeis dinoume ligotera i perissotera
-			if(other_args.size() != 0 && args.size() != 0){
+			if(other_args.size() != 0 && args.size() != 0)
+			{
 				//prepei na metrisoume posa arguments 8eloume
 				int other_args_length = 1; // 3eroume oti arxizei apo 1
 				AArgument arg1 = (AArgument) other_args.get(0);
@@ -86,6 +87,9 @@ public class Visitor2 extends DepthFirstAdapter
 					{
 						errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName +"the number of parametes doesn't much the number of arguments","aek4");		
 					}
+			}else if (other_args.size() == 0 && args.size() != 0)
+			{
+				errorOccurred = error.printError("Line " + line + ": " +" FunctionCall " + fName +"the number of parametes doesn't much the number of arguments","aek5");
 			}
 			
 		}else
