@@ -1,5 +1,5 @@
 x = 2
 y = 'pepe'
 
-variable = doesNotExist + 2
-doesNotExist = 0
+if y == x:
+	print 't'

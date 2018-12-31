@@ -190,6 +190,86 @@ public class Visitor1 extends DepthFirstAdapter
 			expressionType.put(node.toString(), expVal);
 		//System.out.println("end of out parExp");
     }
+	
+	public void outAGreatComparison(AGreatComparison node)
+    {
+        boolean errorOccurred = false;
+        PExpression l = null, r = null;
+		PValue lv = null, rv = null;
+		l = node.getLeftExp();
+		r = node.getRightExp();
+		
+		lv = (PValue)expressionType.get(l.toString());
+		rv = (PValue)expressionType.get(r.toString());
+		
+		if (lv instanceof AStringValue && rv instanceof ANumberValue)
+		{
+			errorOccurred = error.printError("Line " + /*+ line +*/ ": " +"'>' not supported between instances of 'str' and 'int'");
+		}else if (lv instanceof ANumberValue && rv instanceof AStringValue)
+		{
+			errorOccurred = error.printError("Line " + /*+ line +*/ ": " +"'>' not supported between instances of 'int' and 'str'");
+		}
+    }
+	
+	public void outALessComparison(ALessComparison node)
+    {
+        boolean errorOccurred = false;
+        PExpression l = null, r = null;
+		PValue lv = null, rv = null;
+		l = node.getLeftExp();
+		r = node.getRightExp();
+		
+		lv = (PValue)expressionType.get(l.toString());
+		rv = (PValue)expressionType.get(r.toString());
+		
+		if (lv instanceof AStringValue && rv instanceof ANumberValue)
+		{
+			errorOccurred = error.printError("Line " + /*+ line +*/ ": " +"'<' not supported between instances of 'str' and 'int'");
+		}else if (lv instanceof ANumberValue && rv instanceof AStringValue)
+		{
+			errorOccurred = error.printError("Line " + /*+ line +*/ ": " +"'<' not supported between instances of 'int' and 'str'");
+		}
+    }
+	
+	public void outADifComparison(ADifComparison node)
+    {
+        boolean errorOccurred = false;
+        PExpression l = null, r = null;
+		PValue lv = null, rv = null;
+		l = node.getLeftExp();
+		r = node.getRightExp();
+		
+		lv = (PValue)expressionType.get(l.toString());
+		rv = (PValue)expressionType.get(r.toString());
+		
+		if (lv instanceof AStringValue && rv instanceof ANumberValue)
+		{
+			errorOccurred = error.printError("Line " + /*+ line +*/ ": " +"'!=' not supported between instances of 'str' and 'int'");
+		}else if (lv instanceof ANumberValue && rv instanceof AStringValue)
+		{
+			errorOccurred = error.printError("Line " + /*+ line +*/ ": " +"'!=' not supported between instances of 'int' and 'str'");
+		}
+    }
+	
+	public void outAEqComparison(AEqComparison node)
+    {
+        boolean errorOccurred = false;
+        PExpression l = null, r = null;
+		PValue lv = null, rv = null;
+		l = node.getLeftExp();
+		r = node.getRightExp();
+		
+		lv = (PValue)expressionType.get(l.toString());
+		rv = (PValue)expressionType.get(r.toString());
+		
+		if (lv instanceof AStringValue && rv instanceof ANumberValue)
+		{
+			errorOccurred = error.printError("Line " + /*+ line +*/ ": " +"'==' not supported between instances of 'str' and 'int'");
+		}else if (lv instanceof ANumberValue && rv instanceof AStringValue)
+		{
+			errorOccurred = error.printError("Line " + /*+ line +*/ ": " +"'==' not supported between instances of 'int' and 'str'");
+		}
+    }
 
 	public void inAIdExpression(AIdExpression node)
     {
